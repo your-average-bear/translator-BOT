@@ -3654,7 +3654,7 @@ def lang_code_search(search_term, script_search):
             return item_name, is_script
         else:
             return "", False
-    elif len(search_term) == 4 and script_search is True:  # This is a script
+    elif len(search_term) == 4 and script_search:  # This is a script
         if search_term.lower() in master_dict:
             # Since the first two rows are the language code and 639-1 code, we take it from the third row.
             item_name = master_dict[search_term.lower()][0]
@@ -3720,15 +3720,13 @@ def country_converter(text_input, abbreviations_okay=True):
 
     if len(text_input) <= 1:  # Too short, can't return anything for this.
         pass
-    elif (
-        len(text_input) == 2 and abbreviations_okay is True
-    ):  # This is only two letters long
+    elif len(text_input) == 2 and abbreviations_okay:  # This is only two letters long
         text_input = text_input.upper()  # Convert to upper case
         for country in COUNTRY_LIST:
             if text_input == country[1]:  # Matches exactly
                 country_code = text_input
                 country_name = country[0]
-    elif len(text_input) == 3 and abbreviations_okay is True:  # three letters long code
+    elif len(text_input) == 3 and abbreviations_okay:  # three letters long code
         text_input = text_input.upper()  # Convert to upper case
         for country in COUNTRY_LIST:
             if text_input == country[2]:  # Matches exactly
@@ -4113,7 +4111,7 @@ def comment_info_parser(pbody, command):
                 return match, advanced_mode
             else:
                 return None
-        elif advanced_mode is True:
+        elif advanced_mode:
             return match, advanced_mode
     elif longer_search:
         return match, advanced_mode
@@ -4157,7 +4155,7 @@ def replace_bad_english_typing(title):
 
     for word in title_words:
         e_result = english_fuzz(word)
-        if e_result is True:  # This word is a misspelling of "English"
+        if e_result:  # This word is a misspelling of "English"
             title = title.replace(
                 word, "English"
             )  # Replace the offending word with the proper spelling.
@@ -4190,7 +4188,7 @@ def language_mention_search(search_paragraph):
             else:
                 proceed = True
 
-            if len(language_name) != 0 and proceed is True:  # The result is not blank.
+            if len(language_name) != 0 and proceed:  # The result is not blank.
                 language_name_matches.append(language_name)
         else:
             continue
@@ -4324,10 +4322,7 @@ def app_multiple_definer(title_text):
     """
 
     title_text = title_text.lower()
-    if any(keyword in title_text for keyword in APP_WORDS):
-        return True  # Yes, this should be an app post.
-    else:
-        return False  # No it's not.
+    return any(keyword in title_text for keyword in APP_WORDS)
 
 
 def multiple_language_script_assessor(language_list):
@@ -4348,10 +4343,8 @@ def multiple_language_script_assessor(language_list):
         else:  # This is just a language.
             multiple_status = True
 
-    if multiple_status is True:  # Everything is a language
-        return multiple_status
-    else:  # There were scripts.
-        return language_list
+    # Everything is a language else There were scripts
+    return multiple_status if multiple_status else language_list
 
 
 def both_non_english_detector(source_language, target_language):
@@ -4374,10 +4367,7 @@ def both_non_english_detector(source_language, target_language):
     ):  # English is in here, so it CAN'T be what we're looking for.
         return None
 
-    if len(all_languages) <= 1:
-        return None
-    else:
-        return all_languages
+    return len(all_languages) <= 1 if None else all_languages
 
 
 def determine_title_direction(source_languages_list, target_languages_list):
@@ -4670,7 +4660,7 @@ def title_format(title, display_process=False):
                 "english_to",
             )
 
-    if display_process is True:
+    if display_process:
         print("\n## Title as Processed:")
         print(title)
 
@@ -4699,9 +4689,8 @@ def title_format(title, display_process=False):
 
     # If there are two or three words only in source language, concatenate them to see if there's another that exists...
     # (e.g. American Sign Language)
-    if len(source_language) >= 2:
-        if source_language[1].strip() != "-":
-            source_language.append(" ".join(source_language))
+    if len(source_language) >= 2 and source_language[1].strip() != "-":
+        source_language.append(" ".join(source_language))
 
     source_language = [
         x for x in source_language if x not in ENGLISH_2_WORDS
@@ -4710,7 +4699,7 @@ def title_format(title, display_process=False):
         x for x in source_language if x not in ENGLISH_3_WORDS
     ]  # Remove three letter words that can be misconstrued as ISO codes
 
-    if display_process is True:
+    if display_process:
         print("\n## Source Language Strings:")
         print(source_language)
 
@@ -4733,7 +4722,7 @@ def title_format(title, display_process=False):
 
     processed_title = title
 
-    if display_process is True:
+    if display_process:
         print("\n## Final Determined Source Languages:")
         print(d_source_languages)
 
@@ -4744,14 +4733,7 @@ def title_format(title, display_process=False):
             0
         ]  # Split it at the tag boundary and take the first part.
         for character in target_language:
-            if (
-                character == "/"
-                or character == "+"
-                or character == "]"
-                or character == ")"
-                or character == "."
-                or character == ":"
-            ):
+            if character in ["/", "+", "]", ")", ".", ":"]:
                 target_language = target_language.replace(character, " ")
             elif (
                 character == ","
@@ -4763,15 +4745,7 @@ def title_format(title, display_process=False):
             0
         ]  # Split it at the tag boundary and take the first part.
         for character in target_language:
-            if (
-                character == ","
-                or character == "/"
-                or character == "+"
-                or character == "]"
-                or character == ")"
-                or character == "."
-                or character == ":"
-            ):
+            if character in [",", "/", "+", "]", ")", ".", ":"]:
                 target_language = target_language.replace(character, " ")
     elif "-" in title and ">" not in title and " to " not in title:
         title = title[title.find("-") + 1 :]
@@ -4779,15 +4753,7 @@ def title_format(title, display_process=False):
             0
         ]  # Split it at the tag boundary and take the first part.
         for character in target_language:
-            if (
-                character == ","
-                or character == "/"
-                or character == "+"
-                or character == "]"
-                or character == ")"
-                or character == "."
-                or character == ":"
-            ):
+            if character in [",", "/", "+", "]", ")", ".", ":"]:
                 target_language = target_language.replace(character, " ")
     elif "<" in title and ">" not in title and " to " not in title:
         title = title[title.find("-") + 1 :]
@@ -4795,14 +4761,7 @@ def title_format(title, display_process=False):
             0
         ]  # Split it at the tag boundary and take the first part.
         for character in target_language:
-            if (
-                character == ","
-                or character == "/"
-                or character == "]"
-                or character == ")"
-                or character == "."
-                or character == ":"
-            ):
+            if character in [",", "/", "]", ")", ".", ":"]:
                 target_language = target_language.replace(character, " ")
 
     # Replace punctuation in the string. Not yet divided.
@@ -4838,7 +4797,7 @@ def title_format(title, display_process=False):
         x for x in target_language if x not in ENGLISH_3_WORDS
     ]  # Remove three letter words that can be misconstrued as ISO codes
 
-    if display_process is True:
+    if display_process:
         print("\n## Target Language Strings:")
         print(target_language)
 
@@ -4866,7 +4825,7 @@ def title_format(title, display_process=False):
     ):
         d_target_languages.remove("English")
 
-    if display_process is True:
+    if display_process:
         print("\n## Final Determined Target Languages:")
         print(d_target_languages)
 
@@ -4946,12 +4905,9 @@ def title_format(title, display_process=False):
     test_chunk = title.split("]", 1)[
         0
     ]  # Split it at the tag boundary and take the first part.
-    if (
-        " or " in test_chunk.lower() and len(d_target_languages) < 6
-    ):  # See if there are languages considered optional
-        type_o = True  # Type O means that in this sort of case we should really be taking the default
-    else:
-        type_o = False
+    # See if there are languages considered optional
+    # Type O means that in this sort of case we should really be taking the default
+    type_o = " or " in test_chunk.lower() and len(d_target_languages) < 6
 
     # Check for the direction.
     direction = determine_title_direction(d_source_languages, d_target_languages)
@@ -5092,7 +5048,7 @@ def title_format(title, display_process=False):
             final_css_text = final_css_text + final_code_tag
 
     if (
-        type_o is True and final_css == "multiple"
+        type_o and final_css == "multiple"
     ):  # This is one where the target languages may not be what we want MULTIPLE.
         if (
             "English" in d_source_languages
@@ -5403,7 +5359,7 @@ def main_posts_filter(otitle):
         )
         post_okay = False
 
-    if post_okay is True:
+    if post_okay:
         return post_okay, otitle, filter_reason
     else:  # This title failed the test.
         return post_okay, None, filter_reason

@@ -125,16 +125,14 @@ credentials_loader()
 
 # Logging code, defining the basic logger.
 logformatter = "%(levelname)s: %(asctime)s - %(message)s"
-logging.basicConfig(
-    format=logformatter, level=logging.INFO
-)  # By default only show INFO or higher levels.
+# By default only show INFO or higher levels.
+logging.basicConfig(format=logformatter, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Define the logging handler (the file to write to with formatting.)
 handler = logging.FileHandler(FILE_ADDRESS_EVENTS)
-handler.setLevel(
-    logging.INFO
-)  # Change this level for debugging or to display more information.
+# Change this level for debugging or to display more information.
+handler.setLevel(logging.INFO)
 handler_format = logging.Formatter(logformatter, datefmt="%Y-%m-%d [%I:%M:%S %p]")
 handler.setFormatter(handler_format)
 logger.addHandler(handler)
@@ -162,9 +160,7 @@ def get_random_useragent():
     # Select a random one from the list.
     random_ua = random.choice(ua_stored)
     accept_string = "text/html,application/json,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
-    headers = {"User-Agent": random_ua, "Accept": accept_string}
-
-    return headers
+    return {"User-Agent": random_ua, "Accept": accept_string}  # headers
 
 
 def error_log_basic(entry, bot_version):
@@ -249,9 +245,4 @@ def load_statistics_data(language_code):
 
     # Convert the JSON data into a dictionary.
     stats_data = json.loads(stats_data)
-    if language_code in stats_data:
-        specific_data = stats_data[language_code]
-    else:  # This language code does not exist as a key.
-        specific_data = None
-
-    return specific_data
+    return language_code in stats_data if stats_data[language_code] else None
